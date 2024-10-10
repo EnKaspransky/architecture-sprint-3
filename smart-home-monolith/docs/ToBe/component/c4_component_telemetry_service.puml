@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(telemetryServiceContainer, "Telemetry service") {
+
+    Component(telemetryController, "Telemetry Controller", "java", "Обрабатка запросов пользоватей")
+    Component(telemetryHandler, "Telemetry handler", "java", "Обрабатка и анализ телеметрических данных")
+    Component(kafkaConsumer, "Kafka consumer", "", "Чтение телеметрии из очереди")
+    Component(telemetryRepository, "Telemetry repository", "java", "CRUD обработанной телеметрии")
+    Component(telemetryService, "Telemetry service", "java", "")
+
+    Rel(kafkaConsumer, telemetryHandler, "Уведомляет о новой телеметрии")
+    Rel(telemetryController, telemetryRepository, "Запрос данных")
+    Rel(telemetryHandler, telemetryRepository, "Добавление/обновление данных")
+    Rel(telemetryRepository, telemetryService, "Уведомление о новых данных")
+}
+
+Container_Ext(deviceManagerService, "Device manager service", "java", "Менеджер управления устройствами")
+Container_Ext(api_gateway, "API Gateway", "", "Центральная точка входа для всех запросов от внешних систем")
+Container_Ext(kafkaBroker, "Kafka Broker", "Apache Kafka", "Брокер сообщений")
+
+Rel(telemetryService, deviceManagerService, "Стрим обработанной телеметрии")
+Rel(api_gateway, telemetryController, "Запросы на чтение телеметрии")
+Rel(kafkaBroker, kafkaConsumer, "Сообщение о новой телеметрии")
+
+SHOW_LEGEND()
+@enduml

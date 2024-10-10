@@ -1,0 +1,58 @@
+@startuml
+!include <C4/C4_Container>
+
+title Smart home app. AsIs C4 container diagram
+
+AddRelTag("external_flow", $lineStyle = DashedLine()")
+
+Person(user, "User", $sprite="person", "Пользователь умного дома")
+
+System_Boundary(c1, Smart Home App) {
+  Container(client, "Web Client", "На аутсорсе", "Веб интерфейс")
+  Container(api_gateway, "API Gateway", "", "Центральная точка входа для всех запросов от внешних систем")
+  Container(kafkaBroker, "Kafka Broker", "Apache Kafka", "Брокер сообщений")
+  Container(commandService, "Command service", "java", "Сервис отправки комманд на устройства")
+  Container(deviceManagerService, "Device manager service", "java", "Менеджер управдения устройствами")
+  ContainerDb(deviceDb, "Device DB", "Postgresql", "База данных устройств")
+  Container(authService, "Auth service", "java", "Сервис авторизации и управления УЗ пользователей")
+  ContainerDb(userDb, "User DB", "Postgresql", "База данных пользователей")
+  Container(telemetryService, "Telemetry service", "java", "Сервис телеметрии. Чтение данных из потока. Обработка данных. Обрабатка запросов пользоватей")
+  ContainerDb(telemetryCache, "Telemetry cache", "Redis", "Кеш обработанной телеметрии")
+  Container(telemetryShovelService, "Telemetry shovel service", "java", "Сервис телеметрии. Перекладывает данные телеметрии с датчиков в кафку")
+  
+  Rel_R(client, api_gateway, "", "HTTPS")
+
+  Rel(api_gateway, authService, "авторизация, чтение/редактирование профиля пользователя", "HTTPS")
+  Rel(api_gateway, deviceManagerService, "управление устройствами", "HTTPS")
+  Rel(api_gateway, telemetryService, "чтение телеметрии", "HTTPS")
+  
+  Rel_R(deviceManagerService, deviceDb, "", "TCP/IP")
+  Rel(deviceManagerService, telemetryService, "получение обработанной телеметрии", "HTTPS")
+  Rel(deviceManagerService, commandService, "выполнение команды", "HTTPS")
+
+  Rel_R(authService, userDb, "", "TCP/IP")
+  
+  Rel_L(telemetryShovelService, kafkaBroker, "добавление телеметрии в очередь", "HTTPS")
+  Rel(kafkaBroker, telemetryService, "сообщение о новой телеметрии", "HTTPS")
+  Rel_R(telemetryService, telemetryCache, "", "HTTPS")
+}
+
+Boundary(c2, Devices) {
+  System_Ext(hearting_system, "Hearting system", "Система управления отоплением")
+  System_Ext(temperature_sensor, "Temperature sensor", "Датчик температуры")
+  System_Ext(lighting, "Lighting", "Система управления освещением")
+  System_Ext(gate_locker, "Gate locker", "Система управления воротами")
+  System_Ext(video_control, "Video control", "Система видеонаблюдения")
+}
+
+Rel(user, client, "", "HTTPS")
+
+Rel(commandService, hearting_system, "", "HTTPS", $tags="external_flow")
+Rel(commandService, lighting, "", "HTTPS", $tags="external_flow")
+Rel(commandService, gate_locker, "", "HTTPS", $tags="external_flow")
+Rel(commandService, video_control, "", "HTTPS", $tags="external_flow")
+
+Rel(temperature_sensor, telemetryShovelService, "", "MQTT", $tags="external_flow")
+
+SHOW_LEGEND()
+@enduml
