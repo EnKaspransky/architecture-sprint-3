@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(apiGatewayContainer, "API Gateway") {
+
+    Component(apiGatewayController, "API Gateway", "", "Маршрутизация запросов")
+    Component(apiGatewayConfig, "API Gateway Configuration", "Configuration", "Конфигурация маршрутизации")
+
+    Rel(apiGatewayController, apiGatewayConfig, "")
+}
+
+Container_Ext(authService, "Auth service", "java", "Сервис авторизации и управления УЗ пользователей")
+Container_Ext(deviceManagerService, "Device manager service", "java", "Менеджер управления устройствами")
+Container_Ext(telemetryService, "Telemetry service", "java", "Сервис телеметрии. Обрабатывает запросы пользоватей")
+
+Rel(apiGatewayController, authService, "авторизация, чтение/редактирование профиля пользователя")
+Rel(apiGatewayController, deviceManagerService, "управление устройствами")
+Rel(apiGatewayController, telemetryService, "чтение телеметрии")
+
+SHOW_LEGEND()
+@enduml

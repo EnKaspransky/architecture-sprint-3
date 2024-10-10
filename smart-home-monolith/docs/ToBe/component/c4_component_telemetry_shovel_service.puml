@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(telemetryShovelContainer, "Telemetry shovel service") {
+    Component(telemetryHandler, "Telemetry handler", "java", "Обрабатка и отправка команд")
+    Component(kafkaProducer, "Kafka producer", "", "Чтение команды из очереди")
+
+    Rel(telemetryHandler, kafkaProducer, "Добавление телеметрии в очередь")
+}
+
+Container_Ext(kafkaBroker, "Kafka Broker", "Apache Kafka", "Брокер сообщений")
+
+System_Ext(temperature_sensor, "Temperature sensor", "Датчик температуры")
+
+Rel(kafkaProducer, kafkaBroker, "Добавление телеметрии в очередь")
+Rel(temperature_sensor, telemetryHandler, "Отправка команды")
+
+SHOW_LEGEND()
+@enduml

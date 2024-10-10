@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(userServiceContainer, "Auth Service") {
+
+    Component(userController, "User Controller", "java", "Обрабатывает запросы пользователей")
+    Component(userService, "User Service", "java", "Бизнес-логика для пользователей")
+    Component(userRepository, "User Repository", "java", "Хранит и управляет данными пользователей")
+    Component(authClient, "Auth Client", "Rest Client", "Взаимодействует с системой аутентификации")
+
+    Rel(userController, userService, "Направляет запросы на управление пользователями")
+    Rel(userService, userRepository, "Получает и сохраняет данные пользователей")
+    Rel(userService, authClient, "Отправляет запросы на аутентификацию и авторизацию")
+
+}
+
+Container_Ext(api_gateway, "API Gateway", "", "Центральная точка входа для всех запросов от внешних систем")
+
+Rel(api_gateway, userController, "Запросы на авторизацию, аутентификацию и работы с профилем пользователя")
+
+SHOW_LEGEND()
+@enduml

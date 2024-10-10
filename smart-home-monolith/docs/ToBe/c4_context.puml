@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Context>
+
+title Smart home app. ToBe C4 context diagram
+
+Person(user, "User", $sprite="person", "Пользователь умного дома")
+
+System(smart_home_app, "Smart Home App", "Система позволяет управлять отоплением, включать и выключать свет, запирать и отпирать автоматические ворота, удаленно наблюдать за домом и будущее неуточненное поведение")
+
+System_Ext(hearting_system, "Hearting system", "Система управления отоплением")
+System_Ext(temperature_sensor, "Temperature sensor", "Датчик температуры")
+System_Ext(lighting, "Lighting", "Система управления освещением")
+System_Ext(gate_locker, "Gate locker", "Система управления воротами")
+System_Ext(video_control, "Video control", "Система видеонаблюдения")
+
+Rel(user, smart_home_app, "", "Управление умным домом")
+Rel(smart_home_app, hearting_system, "", "Управление системой отопления")
+Rel(temperature_sensor, smart_home_app, "", "Получение температуры с датчика")
+Rel(smart_home_app, lighting, "", "Управление освещением")
+Rel(smart_home_app, gate_locker, "", "Управление воротами")
+Rel(smart_home_app, video_control, "", "Видеонаблюдение")
+
+SHOW_LEGEND()
+@enduml

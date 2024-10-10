@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+
+title Smart home hearting system. AsIs C4 container diagram
+
+AddRelTag("external_flow", $lineStyle = DashedLine()")
+
+Person(user, "User", $sprite="person", "Пользователь системы отопления")
+System_Boundary(c1, Smart Home App) {
+        Container(client, "Web Client", "На аутсорсе", "Веб интерфейс")
+        Container(server, "Web server", "java", "Back-end")
+        ContainerDb(database, "DB", "Postgresql", "База данных")
+}
+
+System_Ext(hearting_system, "Hearting system", "Система управления отоплением")
+System_Ext(temperature_sensor, "Temperature sensor", "Датчик температуры")
+
+
+Rel(user, client, "Uses", "HTTPS")
+Rel(client, server, "Uses", "HTTPS")
+Rel(server, database, "Uses", "TCP/IP")
+Rel(server, hearting_system, "Uses", "HTTPS", $tags="external_flow")
+Rel(server, temperature_sensor, "Uses", "HTTPS", $tags="external_flow")
+
+SHOW_LEGEND()
+@enduml

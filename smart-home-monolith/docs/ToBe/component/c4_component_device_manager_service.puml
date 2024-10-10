@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(deviceManagerServiceContainer, "Device manager service") {
+
+    Component(deviceCommandController, "Device command controller", "java", "Обрабатывает запросы на управление устройствами")
+    Component(commandClient, "Command client", "", "Клиент общения с Command service.")
+    Component(deviceRegistryController, "Device registry controller", "java", "Обрабатывает запросы на получение информации и регистрации устройств")
+    Component(deviceCommandService, "Device command service", "java", "Добавляет команды по расписанию и/или условию")
+    Component(deviceRepository, "Device repository", "java", "CRUD данные об устройствах")
+    Component(telemetryClient, "Telemetry client", "", "Клиент общения с Telemetry Service.")
+
+    Rel(deviceCommandService, deviceCommandController, "Запросы на выполение команд")
+    Rel(deviceCommandController, commandClient, "Отправляет запросы на выполение команд")
+    Rel(deviceCommandService, deviceRepository, "Запрашивает данные о сценариях работы устройств")
+    Rel(telemetryClient, deviceCommandService, "Стрим предобработанной телеметрии")
+    Rel(deviceRegistryController, deviceRepository, "Получает и сохраняет данные об устройствах")
+
+}
+
+Container_Ext(api_gateway, "API Gateway", "", "Центральная точка входа для всех запросов от внешних систем")
+Container_Ext(telemetryService, "Telemetry service", "java", "Обрабатывает и сохраняет телеметрические данные.")
+Container_Ext(commandService, "Command service", "java", "Сервис отправки комманд на устройства")
+
+Rel(api_gateway, deviceRegistryController, "Запросы на регистрацию устройств")
+Rel(api_gateway, deviceCommandController, "Запросы на выполнение комманд")
+Rel(telemetryService, telemetryClient, "Стрим телеметрии")
+Rel(commandClient, commandService, "Отправляет команды на выполнение")
+
+SHOW_LEGEND()
+@enduml

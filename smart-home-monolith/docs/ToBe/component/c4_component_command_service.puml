@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+
+Container_Boundary(commandServiceContainer, "Command service") {
+    Component(commandHandler, "Command handler", "java", "Обрабатка и отправка команд")
+    Component(commandController, "Command controller", "", "Обрабатывает запросы")
+
+    Rel(commandController, commandHandler, "Отправляет команду ответственному обработчику")
+}
+
+Container_Ext(deviceManagerService, "Device manager service", "java", "Менеджер управдения устройствами")
+
+Boundary(c2, Devices) {
+  System_Ext(hearting_system, "Hearting system", "Система управления отоплением")
+  System_Ext(lighting, "Lighting", "Система управления освещением")
+  System_Ext(gate_locker, "Gate locker", "Система управления воротами")
+  System_Ext(video_control, "Video control", "Система видеонаблюдения")
+}
+
+Rel(deviceManagerService, commandController, "Отправляет новую команду")
+Rel(commandHandler, hearting_system, "Отправка команды")
+Rel(commandHandler, lighting, "Отправка команды")
+Rel(commandHandler, gate_locker, "Отправка команды")
+Rel(commandHandler, video_control, "Отправка команды")
+
+SHOW_LEGEND()
+@enduml

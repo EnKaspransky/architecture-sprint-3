@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Context>
+
+title Smart home hearting system. AsIs C4 context diagram
+
+Person(user, "User", $sprite="person", "Пользователь системы отопления")
+
+System(smart_home_app, "Smart Home App", "Управление системой отопленя и мониторинг температуры")
+
+System_Ext(hearting_system, "Hearting system", "Система управления отоплением")
+System_Ext(temperature_sensor, "Temperature sensor", "Датчик температуры")
+
+Rel(user, smart_home_app, "Uses", "Управление системой отопления, мониторинг температуры")
+Rel(smart_home_app, hearting_system, "Uses", "Управление системой отопления")
+Rel(smart_home_app, temperature_sensor, "Uses", "Получение температуры с датчика")
+
+SHOW_LEGEND()
+@enduml
